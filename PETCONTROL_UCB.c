@@ -1,9 +1,29 @@
 #include <stdio.h>
-// Prótotipos das fun
-void menu_principal(void);
+#define MAX_TUTORES 30
+#define MAX_ANIMAIS 50
+#define MAX_ATENDIMENTOS 100
+
+// Prótotipos das funções
+void menu_principal();
+void cadastrar_tutor(Tutor tutores[], int *qtdTutores);
+
+typedef struct {
+    int idT;
+    char nome[50];
+    char telefone[12];
+} Tutor;
+
+typedef struct{
+    int idA;
+    char nome[50];
+    char especie[50];
+    int idT;
+} Animal;
 
 int main() {
-    int opcao;
+    int opcao, qtd_tutor = 0, qtd_animal = 0;
+    Tutor tutores[MAX_TUTORES];
+    Animal animais[MAX_ANIMAIS];
 
     do {
         menu_principal();
@@ -11,7 +31,7 @@ int main() {
 
         switch(opcao) {
             case 1:
-                // Cadastrar Tutor
+                cadastrar_tutor(tutores, qtd_tutor);
                 break;
             case 2:
                 // Cadastrar Animal
@@ -47,7 +67,7 @@ void menu_principal(void){
     char opcoes_nomes[8][50] = {
         "Cadastrar Tutor", "Cadastrar Animal","Listar Cadastros", "Buscar Registros",
         "Registrar Atendimentos", "Alterar Cadastro", "Relatorios", "Sair"
-    };
+    }; 
     printf("\n===================================\n");
     printf("%23s\n", "PETCONTROL");
     printf("===================================\n");
@@ -57,3 +77,17 @@ void menu_principal(void){
     };
     printf("\nEscolha a sua opcao: ");
 }
+
+void cadastrar_tutor(Tutor tutores[], int *qtdTutores) {
+    if (*qtdTutores >= MAX_TUTORES){
+        printf("\nO Limite de tutores foi atingido.\n");
+        return;
+    }
+    // Registra o número do ID/Cadastro do tutor no Vetor.
+    tutores[*qtdTutores].idT = *qtdTutores + 1;
+
+    //
+    printf("\nInforme o nome do Tutor: ");
+    
+}
+

@@ -44,7 +44,7 @@ int main() {
 
 void menu_principal(void){
     // Vetor criado para armazenar os nomes das opções que o menu oferece!
-    char opçoes_nomes[8][50] = {
+    char opcoes_nomes[8][50] = {
         "Cadastrar Tutor", "Cadastrar Animal","Listar Cadastros", "Buscar Registros",
         "Registrar Atendimentos", "Alterar Cadastro", "Relatorios", "Sair"
     };
@@ -53,7 +53,7 @@ void menu_principal(void){
     printf("===================================\n");
     // Usei um For para imprimir corretamente e diminuir o número de linhas necessárias para o Menu.
     for (int i = 0; i < 8; i++) {
-        printf("%d - %s\n", i + 1, opçoes_nomes[i]);
+        printf("%d - %s\n", i + 1, opcoes_nomes[i]);
     };
     printf("\nEscolha a sua opcao: ");
 }

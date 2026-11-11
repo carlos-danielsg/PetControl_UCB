@@ -21,7 +21,8 @@ typedef struct{
 void pausar();
 void menu_principal();
 void cadastrar_tutor(Tutor tutores[], int *qtdTutores);
-void listar_cadastros(Tutor tutores[], int qtdTutores);
+void cadastrar_animal(Animal animais[], int *qtdAnimais, Tutor tutores[], int qtdTutores);
+void listar_cadastros(Tutor tutores[], int qtdTutores, Animal animais[], int qtdAnimais);
 
 int main() {
     int opcao, qtd_tutor = 0, qtd_animal = 0;
@@ -39,10 +40,10 @@ int main() {
                 cadastrar_tutor(tutores, &qtd_tutor);
                 break;
             case 2:
-                // Cadastrar Animal
+                cadastrar_animal(animais, &qtd_animal, tutores, qtd_tutor);
                 break;
             case 3:
-                listar_cadastros(tutores, qtd_tutor);
+                listar_cadastros(tutores, qtd_tutor, animais, qtd_animal);
                 break;
             case 4:
                 // Buscar Registros
@@ -110,15 +111,75 @@ void cadastrar_tutor(Tutor tutores[], int *qtdTutores) {
         tutores[*qtdTutores].idT);
     (*qtdTutores)++;
 }
+void cadastrar_animal(Animal animais[], int *qtdAnimais, Tutor tutores[], int qtdTutores){
+    if (*qtdAnimais >= MAX_ANIMAIS){
+        printf("\nO limite de animais foi atingido.\n");
+        return;
+    }
+    // Validar se há tutores cadastrados!
+    if (qtdTutores == 0){
+        printf("\nCadastre um tutor antes de cadastrar um animal!\n");
+        return;
+    }
+
+    int idTutor, encontrado = 0;
+    printf("\nInforme o ID do Tutor: ");
+    scanf("%d", &idTutor);
+    while(getchar() != '\n');
+    // Valida se o ID fornecido existe!
+    for (int i = 0; i < qtdTutores; i++) {
+        if(tutores[i].idT == idTutor){
+            encontrado = 1;
+            break;
+        }
+    }
+    if (encontrado == 0){
+        printf("\nTutor nao encontrado.\n");
+        return;
+    }
+    // Cria o ID do animal.
+    animais[*qtdAnimais].idA = *qtdAnimais + 1;
+    animais[*qtdAnimais].idT = idTutor;
+    // Coleta o nome do animal!
+    printf("\nInforme o nome do animal: ");
+    fgets(animais[*qtdAnimais].nome, sizeof animais[*qtdAnimais].nome, stdin);
+    animais[*qtdAnimais].nome[strcspn(animais[*qtdAnimais].nome, "\n")] = '\0';
+    // Coleta a especie do animal!
+    printf("\nInforme agora a especie do animal: ");
+    fgets(animais[*qtdAnimais].especie, sizeof animais[*qtdAnimais].especie, stdin);
+    animais[*qtdAnimais].especie[strcspn(animais[*qtdAnimais].especie, "\n")] = '\0';
+    // Imprime os dados para checagem!
+    printf("\nAnimal cadastrado com sucesso!\n"
+        "\nEste animal pertecene ao tutor %s de ID %d\n"
+        "O nome do animal e: %s\n"
+        "Sua especie e: %s\n"
+        "O ID do animal e: %d\n", tutores[idTutor - 1].nome, idTutor, animais[*qtdAnimais].nome,
+        animais[*qtdAnimais].especie, animais[*qtdAnimais].idA
+    );
+    (*qtdAnimais)++;
+
+}
 // Função para listar os cadastros se houver! Ainda falta listar também os animais cadastrados por tutor.
-void listar_cadastros(Tutor tutores[], int qtdTutores) {
+void listar_cadastros(Tutor tutores[], int qtdTutores, Animal animais[], int qtdAnimais) {
     if (qtdTutores == 0) {
         printf("\nNao ha tutores cadastrados no sistema!\n");
         return;
     }
-    printf("\nEsses sao os tutores cadastrados: \n");
+    printf("\nEsses sao os tutores e os animais cadastrados: \n");
+    // Primeiro loop imprime o tutor e seu id
     for (int i = 0; i < qtdTutores; i++) {
         printf("%d - %s\n", tutores[i].idT, tutores[i].nome);
+        // Segundo loop imprime o animal e seu ID de acordo com o tutor
+        int temAnimal = 0;
+        for (int j = 0; j < qtdAnimais; j++){
+            if(tutores[i].idT == animais[j].idT){
+                printf(" | %d - %s\n", animais[j].idA, animais[j].nome);
+                temAnimal = 1;
+            }
+        }
+        if (temAnimal == 0){
+            printf(" | Sem animais cadastrados\n");
+        }
     }
 }
 // Pausa após cada iteração!

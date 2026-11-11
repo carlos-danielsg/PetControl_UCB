@@ -1,16 +1,13 @@
 #include <stdio.h>
+#include <string.h>
 #define MAX_TUTORES 30
 #define MAX_ANIMAIS 50
 #define MAX_ATENDIMENTOS 100
 
-// Prótotipos das funções
-void menu_principal();
-void cadastrar_tutor(Tutor tutores[], int *qtdTutores);
-
 typedef struct {
     int idT;
     char nome[50];
-    char telefone[12];
+    char telefone[20];
 } Tutor;
 
 typedef struct{
@@ -20,6 +17,12 @@ typedef struct{
     int idT;
 } Animal;
 
+// Prótotipos das funções
+void pausar();
+void menu_principal();
+void cadastrar_tutor(Tutor tutores[], int *qtdTutores);
+void listar_cadastros(Tutor tutores[], int qtdTutores);
+
 int main() {
     int opcao, qtd_tutor = 0, qtd_animal = 0;
     Tutor tutores[MAX_TUTORES];
@@ -28,16 +31,18 @@ int main() {
     do {
         menu_principal();
         scanf("%d", &opcao);
+        // Consome o Enter(\n) que fica no buffer!
+        while(getchar() != '\n');
 
         switch(opcao) {
             case 1:
-                cadastrar_tutor(tutores, qtd_tutor);
+                cadastrar_tutor(tutores, &qtd_tutor);
                 break;
             case 2:
                 // Cadastrar Animal
                 break;
             case 3:
-                // Listar Cadastros
+                listar_cadastros(tutores, qtd_tutor);
                 break;
             case 4:
                 // Buscar Registros
@@ -52,11 +57,14 @@ int main() {
                 // Relatórios
                 break;
             case 8:
-                printf("\nEncerrando o progama...\n");
+                printf("\nEncerrando o programa...\n");
                 break;
             default:
                 printf("\nOpcao Invalida, escolha novamente!\n");
                 break;
+        }
+        if(opcao != 8){
+            pausar();
         }
     } while(opcao != 8);
     
@@ -86,8 +94,35 @@ void cadastrar_tutor(Tutor tutores[], int *qtdTutores) {
     // Registra o número do ID/Cadastro do tutor no Vetor.
     tutores[*qtdTutores].idT = *qtdTutores + 1;
 
-    //
+    // Pega o nome do Tutor e retira a quebra de linha!
     printf("\nInforme o nome do Tutor: ");
-    
+    fgets(tutores[*qtdTutores].nome, sizeof tutores[*qtdTutores].nome, stdin);
+    tutores[*qtdTutores].nome[strcspn(tutores[*qtdTutores].nome, "\n")] = '\0';
+    // Pega o telefone do tutor.
+    printf("\nAgora, informe o numero de telefone do tutor: ");
+    fgets(tutores[*qtdTutores].telefone, sizeof tutores[*qtdTutores].telefone, stdin);
+    tutores[*qtdTutores].telefone[strcspn(tutores[*qtdTutores].telefone, "\n")] = '\0';
+    // Imprime os dados para checagem!
+    printf("\nTutor Cadastrado com sucesso!\n"
+        "\nO nome cadastrado foi: %s\n"
+        "O telefone cadastrado foi: %s\n"
+        "O ID desse tutor e: %d\n", tutores[*qtdTutores].nome, tutores[*qtdTutores].telefone,
+        tutores[*qtdTutores].idT);
+    (*qtdTutores)++;
 }
-
+// Função para listar os cadastros se houver! Ainda falta listar também os animais cadastrados por tutor.
+void listar_cadastros(Tutor tutores[], int qtdTutores) {
+    if (qtdTutores == 0) {
+        printf("\nNao ha tutores cadastrados no sistema!\n");
+        return;
+    }
+    printf("\nEsses sao os tutores cadastrados: \n");
+    for (int i = 0; i < qtdTutores; i++) {
+        printf("%d - %s\n", tutores[i].idT, tutores[i].nome);
+    }
+}
+// Pausa após cada iteração!
+void pausar(void) {
+    printf("\nPressione Enter para continuar...");
+    getchar();
+}

@@ -32,7 +32,9 @@ int main() {
 
     do {
         menu_principal();
-        scanf("%d", &opcao);
+        if(scanf("%d", &opcao) != 1){
+            opcao = 0;
+        }
         // Consome o Enter(\n) que fica no buffer!
         while(getchar() != '\n');
 
@@ -190,55 +192,101 @@ void listar_cadastros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
 }
 
 void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int qtdAnimais){
-    int escolha, opcao_tutor;
-    // Checa se há tutores!
+    int escolha;
+ 
+    // Checa se ha tutores!
     if (qtdTutores == 0){
         printf("\nNao ha nenhum tutor cadastrado no sistema!\n");
         return;
     }
+ 
     do {
-        printf("Voce deseja: \n"
+        printf("\nVoce deseja: \n"
             "1 - Procurar pelo ID de um tutor.\n"
             "2 - Procurar pelo ID de um animal.\n"
             "3 - Sair. \n"
         );
-        scanf("%d", &escolha);
+        // Se o usuario digitar algo que nao e numero, escolha vira 0 (cai no default).
+        if (scanf("%d", &escolha) != 1) {
+            escolha = 0;
+        }
         while(getchar() != '\n');
-
+ 
         switch(escolha){
-            case 1:
+            // Checa os registros de um tutor em especifico.
+            case 1: {
+                int idTutor, tem_tutor = 0;
                 printf("\nQual o ID do Tutor que voce quer ver os registros?\n");
-                scanf("%d", &opcao_tutor);
+                if (scanf("%d", &idTutor) != 1) {
+                    idTutor = 0;
+                }
                 while(getchar() != '\n');
-
-                int tem_tutor = 0;
-                for(int i = 0; i < qtdTutores; i++){
-                    if (opcao_tutor == tutores[i].idT){
+                // Procura pelo ID informado dentro da Struct/Vetor
+                for (int i = 0; i < qtdTutores; i++){
+                    if (idTutor == tutores[i].idT){
                         tem_tutor = 1;
                         printf("Tutor encontrado: %s\n"
                             "Telefone do Tutor: %s\n", tutores[i].nome, tutores[i].telefone
                         );
-                    int tem_animal = 0;
-                    for (int j; j < qtdAnimais; j++){
-                        if (animais[j].idT == opcao_tutor){
-                            printf("Animais encontrados: \n"
-                                " | %d - %s (%s)\n", animais[j].idA, animais[j].nome, animais[j].especie);
-                            tem_animal = 1;
+                        // Procura e compara o ID do tutor com o dos animais para ver se ele tem animais.
+                        int tem_animal = 0;
+                        for (int j = 0; j < qtdAnimais; j++){
+                            if (animais[j].idT == idTutor){
+                                if (tem_animal == 0){
+                                    printf("Animais encontrados: \n");
+                                }
+                                printf(" | %d - %s (%s)\n", animais[j].idA, animais[j].nome, animais[j].especie);
+                                tem_animal = 1;
+                            }
                         }
-                    }
-                    if (tem_animal == 0){
-                        printf(" | Sem animais cadastrados\n");
+                        if (tem_animal == 0){
+                            printf(" | Sem animais cadastrados\n");
+                        }
+                        break;
                     }
                 }
-            }
-            if (tem_tutor == 0){
-                printf("Tutor não encontrado.");
+                if (tem_tutor == 0){
+                    printf("\nTutor nao encontrado.\n");
+                }
                 break;
             }
+            // Checa os registros de um animal em especifico.
+            case 2: {
+                int idAnimal, tem_animal = 0;
+                if (qtdAnimais == 0) {
+                    printf("\nNao ha animais cadastrados.\n");
+                    break;
+                }
+                printf("\nQual o ID do Animal que voce quer ver os registros?\n");
+                if (scanf("%d", &idAnimal) != 1) {
+                    idAnimal = 0;
+                }
+                while(getchar() != '\n');
+ 
+                for (int i = 0; i < qtdAnimais; i++){
+                    if (idAnimal == animais[i].idA){
+                        tem_animal = 1;
+                        printf("Animal encontrado: %s\n"
+                            "Especie do Animal: %s\n", animais[i].nome, animais[i].especie
+                        );
+                        // Procura o tutor pelo idT do animal (e nao pelo indice i).
+                        for (int j = 0; j < qtdTutores; j++){
+                            if (tutores[j].idT == animais[i].idT){
+                                printf("Tutor: %s (ID: %d)\n", tutores[j].nome, tutores[j].idT);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                // Fora do for: so avisa depois de olhar todos os animais.
+                if (tem_animal == 0){
+                    printf("\nAnimal nao encontrado.\n");
+                }
                 break;
-            case 2:
-                break;
+            }
             case 3:
+                printf("\nVoltando ao menu inicial...\n");
                 break;
             default:
                 printf("\nOpcao Invalida, escolha novamente!\n");
@@ -249,7 +297,6 @@ void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
         }
     } while(escolha != 3);
 }
-
 // Pausa após cada iteração!
 void pausar(void) {
     printf("\nPressione Enter para continuar...\n");

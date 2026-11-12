@@ -23,6 +23,7 @@ void menu_principal();
 void cadastrar_tutor(Tutor_t tutores[], int *qtdTutores);
 void cadastrar_animal(Animal_t animais[], int *qtdAnimais, Tutor_t tutores[], int qtdTutores);
 void listar_cadastros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int qtdAnimais);
+void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int qtdAnimais);
 
 int main() {
     int opcao, qtd_tutor = 0, qtd_animal = 0;
@@ -46,7 +47,7 @@ int main() {
                 listar_cadastros(tutores, qtd_tutor, animais, qtd_animal);
                 break;
             case 4:
-                // Buscar Registros
+                buscar_registros(tutores, qtd_tutor, animais, qtd_animal);
                 break;
             case 5:
                 // Registrar Atendimentos
@@ -124,18 +125,19 @@ void cadastrar_animal(Animal_t animais[], int *qtdAnimais, Tutor_t tutores[], in
         return;
     }
 
-    int idTutor, encontrado = 0;
+    int idTutor, indice = -1;
     printf("\nInforme o ID do Tutor: ");
     scanf("%d", &idTutor);
     while(getchar() != '\n');
-    // Valida se o ID fornecido existe!
+
+    // Valida se o ID fornecido existe e guarda sua posição.
     for (int i = 0; i < qtdTutores; i++) {
         if(tutores[i].idT == idTutor){
-            encontrado = 1;
+            indice = i;
             break;
         }
     }
-    if (encontrado == 0){
+    if (indice == -1){
         printf("\nTutor nao encontrado.\n");
         return;
     }
@@ -154,10 +156,10 @@ void cadastrar_animal(Animal_t animais[], int *qtdAnimais, Tutor_t tutores[], in
     animal->especie[strcspn(animal->especie, "\n")] = '\0';
     // Imprime os dados para checagem!
     printf("\nAnimal cadastrado com sucesso!\n"
-        "\nEste animal pertecene ao tutor %s de ID %d\n"
+        "\nEste animal pertence ao tutor %s de ID %d\n"
         "O nome do animal e: %s\n"
         "Sua especie e: %s\n"
-        "O ID do animal e: %d\n", tutores[idTutor - 1].nome, idTutor, animal->nome,
+        "O ID do animal e: %d\n", tutores[indice].nome, idTutor, animal->nome,
         animal->especie, animal->idA
     );
     (*qtdAnimais)++;
@@ -186,8 +188,70 @@ void listar_cadastros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
         }
     }
 }
+
+void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int qtdAnimais){
+    int escolha, opcao_tutor;
+    // Checa se há tutores!
+    if (qtdTutores == 0){
+        printf("\nNao ha nenhum tutor cadastrado no sistema!\n");
+        return;
+    }
+    do {
+        printf("Voce deseja: \n"
+            "1 - Procurar pelo ID de um tutor.\n"
+            "2 - Procurar pelo ID de um animal.\n"
+            "3 - Sair. \n"
+        );
+        scanf("%d", &escolha);
+        while(getchar() != '\n');
+
+        switch(escolha){
+            case 1:
+                printf("\nQual o ID do Tutor que voce quer ver os registros?\n");
+                scanf("%d", &opcao_tutor);
+                while(getchar() != '\n');
+
+                int tem_tutor = 0;
+                for(int i = 0; i < qtdTutores; i++){
+                    if (opcao_tutor == tutores[i].idT){
+                        tem_tutor = 1;
+                        printf("Tutor encontrado: %s\n"
+                            "Telefone do Tutor: %s\n", tutores[i].nome, tutores[i].telefone
+                        );
+                    int tem_animal = 0;
+                    for (int j; j < qtdAnimais; j++){
+                        if (animais[j].idT == opcao_tutor){
+                            printf("Animais encontrados: \n"
+                                " | %d - %s (%s)\n", animais[j].idA, animais[j].nome, animais[j].especie);
+                            tem_animal = 1;
+                        }
+                    }
+                    if (tem_animal == 0){
+                        printf(" | Sem animais cadastrados\n");
+                    }
+                }
+            }
+            if (tem_tutor == 0){
+                printf("Tutor não encontrado.");
+                break;
+            }
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                printf("\nOpcao Invalida, escolha novamente!\n");
+                break;
+        }
+        if (escolha != 3){
+            pausar();
+        }
+    } while(escolha != 3);
+}
+
 // Pausa após cada iteração!
 void pausar(void) {
-    printf("\nPressione Enter para continuar...");
+    printf("\nPressione Enter para continuar...\n");
     getchar();
 }

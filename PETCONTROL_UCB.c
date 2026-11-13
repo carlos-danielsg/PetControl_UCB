@@ -17,18 +17,33 @@ typedef struct{
     int idT;
 } Animal_t;
 
-// Prótotipos das funções
-void pausar();
-void menu_principal();
+typedef struct {
+    int idAt;
+    int idA;
+    int idS;
+    int quantidade;
+    float valor_total;
+} Atendimento_t;
+
+// Prototipos das funcoes
+void pausar(void);
+void menu_principal(void);
 void cadastrar_tutor(Tutor_t tutores[], int *qtdTutores);
 void cadastrar_animal(Animal_t animais[], int *qtdAnimais, Tutor_t tutores[], int qtdTutores);
 void listar_cadastros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int qtdAnimais);
 void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int qtdAnimais);
+void listar_servicos(char nomes[][30], float precos[], int usa_qtd[], int qtd_servicos);
+void registrar_atendimentos (Atendimento_t atendimentos[], int *qtdAtendimentos, Animal_t animais[],
+int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos);
 
 int main() {
-    int opcao, qtd_tutor = 0, qtd_animal = 0;
+    int opcao, qtd_tutor = 0, qtd_animal = 0, qtd_servicos = 4, qtd_atendimento = 0;
     Tutor_t tutores[MAX_TUTORES];
     Animal_t animais[MAX_ANIMAIS];
+    Atendimento_t atendimentos[MAX_ATENDIMENTOS];
+    char nomes_servicos[4][30] = {"Banho","Tosa", "Consulta", "Vacinacao"};
+    float preco_servicos[4] = {50.00f, 70.00f, 120.00f, 80.00f};
+    int usa_quantidade[4] = {0, 0, 0, 1}; // Se o valor for 1, pergunta a quantidade;
 
     do {
         menu_principal();
@@ -52,7 +67,8 @@ int main() {
                 buscar_registros(tutores, qtd_tutor, animais, qtd_animal);
                 break;
             case 5:
-                // Registrar Atendimentos
+                registrar_atendimentos(atendimentos, &qtd_atendimento, animais, qtd_animal,
+                           nomes_servicos, preco_servicos, usa_quantidade, qtd_servicos);
                 break;
             case 6:
                 // Alterar Cadastros
@@ -71,7 +87,8 @@ int main() {
             pausar();
         }
     } while(opcao != 8);
-    
+
+    return 0;
 }
 
 void menu_principal(void){
@@ -129,7 +146,9 @@ void cadastrar_animal(Animal_t animais[], int *qtdAnimais, Tutor_t tutores[], in
 
     int idTutor, indice = -1;
     printf("\nInforme o ID do Tutor: ");
-    scanf("%d", &idTutor);
+    if (scanf("%d", &idTutor) != 1){
+        idTutor = -1;
+    }
     while(getchar() != '\n');
 
     // Valida se o ID fornecido existe e guarda sua posição.
@@ -193,13 +212,11 @@ void listar_cadastros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
 
 void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int qtdAnimais){
     int escolha;
- 
     // Checa se ha tutores!
     if (qtdTutores == 0){
         printf("\nNao ha nenhum tutor cadastrado no sistema!\n");
         return;
     }
- 
     do {
         printf("\nVoce deseja: \n"
             "1 - Procurar pelo ID de um tutor.\n"
@@ -296,6 +313,92 @@ void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
             pausar();
         }
     } while(escolha != 3);
+}
+
+void listar_servicos(char nomes[][30], float precos[], int usa_qtd[], int qtd_servicos){
+    printf("\nEsses sao os servicos disponiveis: \n");
+    for (int i = 0; i < qtd_servicos; i++){
+        printf("%d - %-22s R$ %7.2f", i + 1, nomes[i], precos[i]);
+        if (usa_qtd[i] != 0){
+            printf(" (por unidade)");
+        }
+        printf("\n");
+    }
+}
+
+void registrar_atendimentos (Atendimento_t atendimentos[], int *qtdAtendimentos, Animal_t animais[],
+int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos){
+    // Checa se ultrapassou o limite
+    if(*qtdAtendimentos >= MAX_ATENDIMENTOS){
+        printf("\nLimite de atendimentos atingido\n");
+        return;
+    }
+    // Checa se há animais cadastrados
+    if (qtdAnimais == 0){
+        printf("\nNao ha animais cadastrados.\n");
+        return;
+    }
+    // indice_animal guarda a POSICAO do animal no vetor (-1 = nao encontrado).
+    int id_animal = 0, indice_animal = -1;
+    printf("\nInforme o ID do animal: \n");
+    if(scanf("%d", &id_animal) != 1){
+        id_animal = 0; // nenhum animal tem ID 0
+    }
+    while(getchar() != '\n');
+    for (int i = 0; i < qtdAnimais; i++){
+        if (animais[i].idA == id_animal){
+            indice_animal = i;
+            break;
+        }
+    } // checa se o id existe no banco de dados.
+    if (indice_animal == -1){
+        printf("\nAnimal nao encontrado.\n");
+        return;
+    }
+
+    listar_servicos(nomes, precos, usaQtd, qtdServicos);
+    int id_servico;
+    printf("\nEscolha o servico: ");
+    if(scanf("%d", &id_servico)!= 1){
+        id_servico = 0;
+    }
+    while(getchar() != '\n');
+
+    if (id_servico < 1 || id_servico > qtdServicos){
+        printf("\nServico Invalido.\n");
+        return;
+    }
+    int pos_servico = id_servico - 1;
+    
+    int quantidade = 1;
+    if(usaQtd[pos_servico] == 1){
+        printf("Escolha a quantidade: ");
+        if(scanf("%d", &quantidade) != 1){
+            quantidade = 0;
+        }
+        while(getchar() != '\n');
+        if (quantidade < 1) {
+            printf("\nQuantidade Invalida\n");
+            return;
+        }
+    }
+    // Salva o atendimento na struct.
+    Atendimento_t *atende = &atendimentos[*qtdAtendimentos];
+    atende->idAt = *qtdAtendimentos + 1;
+    atende->idA = id_animal;
+    atende->idS = id_servico;
+    atende->quantidade = quantidade;
+    atende->valor_total = precos[pos_servico] * quantidade;
+
+    printf("\nAtendimento registrado com sucesso!\n"
+        "\nAtendimento: %d\n"
+        "Animal: %s (ID: %d)\n"
+        "Servico: %s\n"
+        "Quantidade: %d\n"
+        "Valor total: R$ %.2f\n",
+        atende->idAt, animais[indice_animal].nome, id_animal,
+        nomes[pos_servico], quantidade, atende->valor_total);
+    (*qtdAtendimentos)++;
 }
 // Pausa após cada iteração!
 void pausar(void) {

@@ -10,7 +10,7 @@ Sistema de controle de tutores e animais, feito em **C** e executado no terminal
 | 2 | Cadastrar animal (nome e espécie, vinculado a um tutor) | Pronto |
 | 3 | Listar cadastros (tutores com seus animais) | Pronto |
 | 4 | Buscar registros por ID de tutor ou de animal | Pronto |
-| 5 | Registrar atendimentos | A fazer |
+| 5 | Registrar atendimentos | Pronto |
 | 6 | Alterar cadastros | A fazer |
 | 7 | Relatórios | A fazer |
 | 8 | Sair | Pronto |
@@ -22,6 +22,7 @@ Sistema de controle de tutores e animais, feito em **C** e executado no terminal
 - **Listagem:** mostra cada tutor com seus animais. Tutores sem animais aparecem como "Sem animais cadastrados".
 - **Busca por tutor:** mostra nome, telefone e todos os animais dele.
 - **Busca por animal:** mostra nome, espécie e o tutor responsável.
+- **Registrar atendimentos** só é possivel se existir ao menos um tutor e um animal, lista serviços e salva os atendimentos.
 
 ## Como compilar e executar
 
@@ -54,7 +55,7 @@ Escolha a sua opcao:
 
 ## Estrutura de dados
 
-O projeto usa duas `struct` armazenadas em vetores:
+O projeto usa três `struct` armazenadas em vetores:
 
 ```c
 typedef struct {
@@ -69,6 +70,14 @@ typedef struct {
     char especie[50];
     int idT;          // ID do tutor responsável
 } Animal_t;
+
+typedef struct {
+    int idAt;
+    int idA;
+    int idS;
+    int quantidade;
+    float valor_total;
+} Atendimento_t;
 ```
 
 ### Limites
@@ -89,4 +98,6 @@ typedef struct {
 | `cadastrar_animal` | Cadastra um animal vinculado a um tutor existente |
 | `listar_cadastros` | Lista tutores e seus animais |
 | `buscar_registros` | Submenu de busca por ID de tutor ou de animal |
+| `listar_servicos` | Exibe os serviços pré definidos |
+| `registrar_atendimentos` | Cadastra um atendimento vinculado a um animal existente|
 | `pausar` | Aguarda o Enter antes de voltar ao menu |

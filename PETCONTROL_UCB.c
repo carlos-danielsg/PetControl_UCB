@@ -14,6 +14,7 @@ typedef struct{
     int idA;
     char nome[50];
     char especie[50];
+    int idade;
     int idT;
 } Animal_t;
 
@@ -28,7 +29,7 @@ typedef struct {
 // Prototipos das funcoes
 void pausar(void);
 void menu_principal(void);
-int ler_id(void);
+int ler_int(void);
 int buscar_tutor(Tutor_t tutores[], int qtdTutores, int id);
 int buscar_animal(Animal_t animais[], int qtdAnimais, int id);
 void cadastrar_tutor(Tutor_t tutores[], int *qtdTutores);
@@ -41,6 +42,7 @@ int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos)
 void alterar_cadastro(Animal_t animais[], Tutor_t tutores[], int qtdAnimais, int qtdTutores);
 void alterar_tutor(Tutor_t *tutor);
 void alterar_animal(Animal_t *animal, Tutor_t tutores[], int qtdTutores);
+void relatorio(int qtdAnimais, int qtdTutores, int qtdAtendimentos, Atendimento_t atendimentos[], char nomes[][30], int qtdServicos);
 
 int main() {
     int opcao, qtd_tutor = 0, qtd_animal = 0, qtd_servicos = 4, qtd_atendimento = 0;
@@ -53,7 +55,7 @@ int main() {
 
     do {
         menu_principal();
-        opcao = ler_id();
+        opcao = ler_int();
 
         switch(opcao) {
             case 1:
@@ -76,7 +78,7 @@ int main() {
                 alterar_cadastro(animais, tutores, qtd_animal, qtd_tutor);
                 break;
             case 7:
-                // Relatórios
+                relatorio(qtd_animal, qtd_tutor, qtd_atendimento, atendimentos, nomes_servicos, qtd_servicos);
                 break;
             case 8:
                 printf("\nEncerrando o programa...\n");
@@ -110,7 +112,7 @@ void menu_principal(void){
 }
 
 // Le um inteiro e limpa o resto da linha. Se nao for numero, devolve -1.
-int ler_id(void){
+int ler_int(void){
     int numero;
     if (scanf("%d", &numero) != 1){
         numero = -1;
@@ -150,13 +152,23 @@ void cadastrar_tutor(Tutor_t tutores[], int *qtdTutores) {
     tutor->idT = *qtdTutores + 1;
 
     // Pega o nome do Tutor e retira a quebra de linha!
-    printf("\nInforme o nome do Tutor: ");
-    fgets(tutor->nome, sizeof tutor->nome, stdin);
-    tutor->nome[strcspn(tutor->nome, "\n")] = '\0';
+    do{
+        printf("\nInforme o nome do Tutor: ");
+        fgets(tutor->nome, sizeof tutor->nome, stdin);
+        tutor->nome[strcspn(tutor->nome, "\n")] = '\0';
+        if(tutor->nome[0] == '\0'){
+            printf("Nome nao pode ser vazio\n");
+        }
+    } while(tutor->nome[0] == '\0');
     // Pega o telefone do tutor.
-    printf("\nAgora, informe o numero de telefone do tutor: ");
-    fgets(tutor->telefone, sizeof tutor->telefone, stdin);
-    tutor->telefone[strcspn(tutor->telefone, "\n")] = '\0';
+    do{
+        printf("\nAgora, informe o numero de telefone do tutor: ");
+        fgets(tutor->telefone, sizeof tutor->telefone, stdin);
+        tutor->telefone[strcspn(tutor->telefone, "\n")] = '\0';
+        if (tutor->telefone[0] == '\0'){
+            printf("Telefone nao pode ser vazio\n");
+        }
+    } while(tutor->telefone[0] == '\0');
     // Imprime os dados para checagem!
     printf("\nTutor Cadastrado com sucesso!\n"
         "\nO nome cadastrado foi: %s\n"
@@ -178,7 +190,7 @@ void cadastrar_animal(Animal_t animais[], int *qtdAnimais, Tutor_t tutores[], in
 
     int idTutor, indice;
     printf("\nInforme o ID do Tutor: ");
-    idTutor = ler_id();
+    idTutor = ler_int();
 
     // Valida se o ID fornecido existe e guarda sua posição.
     indice = buscar_tutor(tutores, qtdTutores, idTutor);
@@ -192,20 +204,38 @@ void cadastrar_animal(Animal_t animais[], int *qtdAnimais, Tutor_t tutores[], in
     animal->idA = *qtdAnimais + 1;
     animal->idT = idTutor;
     // Coleta o nome do animal!
-    printf("\nInforme o nome do animal: ");
-    fgets(animal->nome, sizeof animal->nome, stdin);
-    animal->nome[strcspn(animal->nome, "\n")] = '\0';
+    do{
+        printf("\nInforme o nome do animal: ");
+        fgets(animal->nome, sizeof animal->nome, stdin);
+        animal->nome[strcspn(animal->nome, "\n")] = '\0';
+        if (animal->nome[0] == '\0'){
+            printf("Nome nao pode ser vazio\n");
+        }
+    } while(animal->nome[0] == '\0');
     // Coleta a especie do animal!
-    printf("\nInforme agora a especie do animal: ");
-    fgets(animal->especie, sizeof animal->especie, stdin);
-    animal->especie[strcspn(animal->especie, "\n")] = '\0';
+    do{
+        printf("\nInforme agora a especie do animal: ");
+        fgets(animal->especie, sizeof animal->especie, stdin);
+        animal->especie[strcspn(animal->especie, "\n")] = '\0';
+        if(animal->especie[0] == '\0'){
+            printf("Especie nao pode ser vazia\n");
+        }
+    } while(animal->especie[0] == '\0');
+    do {
+        printf("\nInforme agora a idade do animal(em anos): ");
+        animal->idade = ler_int();
+        if (animal->idade < 0){
+            printf("Idade Invalida!\n");
+        }
+    } while (animal->idade < 0);
     // Imprime os dados para checagem!
     printf("\nAnimal cadastrado com sucesso!\n"
         "\nEste animal pertence ao tutor %s de ID %d\n"
         "O nome do animal e: %s\n"
         "Sua especie e: %s\n"
-        "O ID do animal e: %d\n", tutores[indice].nome, idTutor, animal->nome,
-        animal->especie, animal->idA
+        "O ID do animal e: %d\n"
+        "A idade do animal e: %d anos\n", tutores[indice].nome, idTutor, animal->nome,
+        animal->especie, animal->idA, animal->idade
     );
     (*qtdAnimais)++;
 
@@ -248,14 +278,14 @@ void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
             "3 - Sair. \n"
         );
         // Se o usuario digitar algo que nao e numero, escolha vira -1 (cai no default).
-        escolha = ler_id();
+        escolha = ler_int();
  
         switch(escolha){
             // Checa os registros de um tutor em especifico.
             case 1: {
                 int idTutor, indice_tutor;
                 printf("\nQual o ID do Tutor que voce quer ver os registros?\n");
-                idTutor = ler_id();
+                idTutor = ler_int();
                 // Procura pelo ID informado dentro da Struct/Vetor
                 indice_tutor = buscar_tutor(tutores, qtdTutores, idTutor);
                 if (indice_tutor == -1){
@@ -289,7 +319,7 @@ void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
                     break;
                 }
                 printf("\nQual o ID do Animal que voce quer ver os registros?\n");
-                idAnimal = ler_id();
+                idAnimal = ler_int();
 
                 indice_animal = buscar_animal(animais, qtdAnimais, idAnimal);
                 if (indice_animal == -1){
@@ -297,7 +327,8 @@ void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
                     break;
                 }
                 printf("Animal encontrado: %s\n"
-                    "Especie do Animal: %s\n", animais[indice_animal].nome, animais[indice_animal].especie
+                    "Especie do Animal: %s\n"
+                    "Idade do Animal: %d anos\n", animais[indice_animal].nome, animais[indice_animal].especie, animais[indice_animal].idade
                 );
                 // Procura o tutor pelo idT guardado no animal.
                 int indice_tutor = buscar_tutor(tutores, qtdTutores, animais[indice_animal].idT);
@@ -345,7 +376,7 @@ int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos)
     // indice_animal guarda a POSICAO do animal no vetor (-1 = nao encontrado).
     int id_animal = 0, indice_animal;
     printf("\nInforme o ID do animal: \n");
-    id_animal = ler_id();
+    id_animal = ler_int();
     // checa se o id existe no banco de dados.
     indice_animal = buscar_animal(animais, qtdAnimais, id_animal);
     if (indice_animal == -1){
@@ -356,7 +387,7 @@ int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos)
     listar_servicos(nomes, precos, usaQtd, qtdServicos);
     int id_servico;
     printf("\nEscolha o servico: ");
-    id_servico = ler_id();
+    id_servico = ler_int();
 
     if (id_servico < 1 || id_servico > qtdServicos){
         printf("\nServico Invalido.\n");
@@ -367,7 +398,7 @@ int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos)
     int quantidade = 1;
     if(usaQtd[pos_servico] == 1){
         printf("Escolha a quantidade: ");
-        quantidade = ler_id();
+        quantidade = ler_int();
         if (quantidade < 1) {
             printf("\nQuantidade Invalida\n");
             return;
@@ -404,12 +435,12 @@ void alterar_cadastro(Animal_t animais[], Tutor_t tutores[], int qtdAnimais, int
             "2 - Alterar o cadastro de um Animal\n"
             "3 - Sair. \n"
         );
-        escolha = ler_id();
+        escolha = ler_int();
         switch(escolha){
             case 1: {
                 int id_tutor, indice_tutor;
                 printf("\nQual o ID do tutor que voce deseja alterar os dados?\n");
-                id_tutor = ler_id();
+                id_tutor = ler_int();
                 indice_tutor = buscar_tutor(tutores, qtdTutores, id_tutor);
                 if (indice_tutor == -1){
                     printf("\nTutor nao encontrado.\n");
@@ -425,7 +456,7 @@ void alterar_cadastro(Animal_t animais[], Tutor_t tutores[], int qtdAnimais, int
                     break;
                 }
                 printf("\nQual o ID do animal que voce deseja alterar os dados?\n");
-                id_animal = ler_id();
+                id_animal = ler_int();
                 indice_animal = buscar_animal(animais, qtdAnimais, id_animal);
                 if(indice_animal == -1){
                     printf("\nAnimal nao encontrado.\n");
@@ -456,7 +487,7 @@ void alterar_tutor(Tutor_t *tutor){
             "2 - Telefone do Tutor\n"
             "3 - Sair\n"
         );
-        escolha_tutor = ler_id();
+        escolha_tutor = ler_int();
 
         switch(escolha_tutor) {
         case 1: {
@@ -505,9 +536,10 @@ void alterar_animal(Animal_t *animal, Tutor_t tutores[], int qtdTutores){
             "1 - Nome do Animal\n"
             "2 - Especie do Animal\n"
             "3 - Tutor do Animal\n"
-            "4 - Sair\n"
+            "4 - Idade do Animal\n"
+            "5 - Sair\n"
         );
-        escolha_animal = ler_id();
+        escolha_animal = ler_int();
 
         switch(escolha_animal){
             case 1:{
@@ -546,7 +578,7 @@ void alterar_animal(Animal_t *animal, Tutor_t tutores[], int qtdTutores){
                     printf("\nO tutor atual e: %s (ID: %d)\n", tutores[tutor_atual].nome, tutores[tutor_atual].idT);
                 }
                 printf("\nInforme o ID do novo tutor: ");
-                novo_tutor_ID = ler_id();
+                novo_tutor_ID = ler_int();
                 novo_tutor = buscar_tutor(tutores, qtdTutores, novo_tutor_ID);
                 if(novo_tutor == -1){
                     printf("\nTutor nao encontrado. Nada foi alterado.\n");
@@ -559,15 +591,66 @@ void alterar_animal(Animal_t *animal, Tutor_t tutores[], int qtdTutores){
                 break;
             }
             case 4:{
+                int nova_idade;
+                printf("\nA atual idade cadastrada e %d anos.\n", animal->idade);
+                do{
+                    printf("\nDigite agora a idade atualizada do animal: ");
+                    nova_idade = ler_int();
+                    if(nova_idade < 0){
+                        printf("\nIdade Invalida!\n");
+                    }
+                } while (nova_idade < 0);
+                animal->idade = nova_idade;
+                printf("\nIdade alterada com sucesso.\n");
+                break;
+            }
+            case 5:{
                 printf("\nVoltando...\n");
                 break;
             }
             default:{
-                printf("Escolha Invalida.");
+                printf("\nEscolha Invalida.\n");
                 break;
             }
         }
-    } while (escolha_animal != 4);
+    } while (escolha_animal != 5);
+}
+
+void relatorio(int qtdAnimais, int qtdTutores, int qtdAtendimentos, Atendimento_t atendimentos[], char nomes[][30], int qtdServicos){
+    float faturamento_total = 0;
+    int atend_por_servico[4] = {0};
+
+    if (qtdTutores == 0){
+        printf("\nNao ha tutores cadastrados.\n");
+        return;
+    }
+    for (int i = 0; i < qtdAtendimentos; i++){
+        faturamento_total += atendimentos[i].valor_total;
+        atend_por_servico[atendimentos[i].idS - 1]++;
+    }
+    printf("\n===== RELATORIO GERAL =====\n"
+        "Animais cadastrados: %d\n"
+        "Tutores cadastrados: %d\n"
+        "Atendimentos realizados: %d\n"
+        "Faturamento total: R$ %.2f\n",
+        qtdAnimais, qtdTutores, qtdAtendimentos, faturamento_total);
+    
+    if (qtdAtendimentos == 0){
+        printf("Servico mais utilizado: nenhum atendimento registrado\n");
+        return;
+    }
+    printf("\n===== ATENDIMENTOS POR SERVICO =====\n");
+    for(int i = 0; i < qtdServicos; i++){
+        printf("%-15s: %d atendimento(s)\n", nomes[i], atend_por_servico[i]);
+    }
+
+    int mais_usado = 0;
+    for (int i = 1; i <qtdServicos; i++){
+        if(atend_por_servico[i] > atend_por_servico[mais_usado]){
+            mais_usado = i;
+        }
+    }
+    printf("Servico mais utilizado: %s (%d atendimento(s))\n", nomes[mais_usado], atend_por_servico[mais_usado]);
 }
 // Pausa após cada iteração!
 void pausar(void) {

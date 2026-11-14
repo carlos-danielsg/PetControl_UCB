@@ -35,6 +35,8 @@ void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
 void listar_servicos(char nomes[][30], float precos[], int usa_qtd[], int qtd_servicos);
 void registrar_atendimentos (Atendimento_t atendimentos[], int *qtdAtendimentos, Animal_t animais[],
 int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos);
+void alterar_cadastro(Animal_t animais[], Tutor_t tutores[], int qtdAnimais, int qtdTutores);
+void alterar_tutor(Tutor_t *tutor);
 
 int main() {
     int opcao, qtd_tutor = 0, qtd_animal = 0, qtd_servicos = 4, qtd_atendimento = 0;
@@ -71,7 +73,7 @@ int main() {
                            nomes_servicos, preco_servicos, usa_quantidade, qtd_servicos);
                 break;
             case 6:
-                // Alterar Cadastros
+                alterar_cadastro(animais, tutores, qtd_animal, qtd_tutor);
                 break;
             case 7:
                 // Relatórios
@@ -286,7 +288,6 @@ void buscar_registros(Tutor_t tutores[], int qtdTutores, Animal_t animais[], int
                         printf("Animal encontrado: %s\n"
                             "Especie do Animal: %s\n", animais[i].nome, animais[i].especie
                         );
-                        // Procura o tutor pelo idT do animal (e nao pelo indice i).
                         for (int j = 0; j < qtdTutores; j++){
                             if (tutores[j].idT == animais[i].idT){
                                 printf("Tutor: %s (ID: %d)\n", tutores[j].nome, tutores[j].idT);
@@ -399,6 +400,118 @@ int qtdAnimais, char nomes[][30], float precos[], int usaQtd[], int qtdServicos)
         atende->idAt, animais[indice_animal].nome, id_animal,
         nomes[pos_servico], quantidade, atende->valor_total);
     (*qtdAtendimentos)++;
+}
+void alterar_cadastro(Animal_t animais[], Tutor_t tutores[], int qtdAnimais, int qtdTutores){
+    int escolha;
+    // Checa se ha tutores!
+    if (qtdTutores == 0){
+        printf("\nNao ha nenhum tutor cadastrado no sistema!\n");
+        return;
+    }
+    do{
+        printf("\nVoce deseja: \n"
+            "1 - Alterar o cadastro de um Tutor.\n"
+            "2 - Alterar o cadastro de um Animal\n"
+            "3 - Sair. \n"
+        );
+        if (scanf("%d", &escolha) != 1) {
+            escolha = 0;
+        }
+        while(getchar() != '\n');
+        switch(escolha){
+            case 1: {
+                int id_tutor, indice_tutor = -1;
+                printf("\nQual o ID do tutor que você deseja alterar os dados?\n");
+                if (scanf("%d", &id_tutor) != 1) {
+                    id_tutor = 0;
+                }
+                while(getchar() != '\n');
+                for (int i = 0; i < qtdTutores; i++){
+                    if(id_tutor == tutores[i].idT){
+                        indice_tutor = i;
+                        break;
+                    }
+                }
+                if (indice_tutor == -1){
+                    printf("\nTutor nao encontrado.\n");
+                    break;
+                }
+                alterar_tutor(&tutores[indice_tutor]);
+                break;
+            }
+            case 2: {
+                int id_animal, indice_animal = -1;
+                printf("\n Qual o ID do animal que voce deseja alterar os dados?\n");
+            }
+            case 3: {
+                printf("\nVoltando ao menu inicial...\n");
+                break;
+            }
+            default:
+                printf("\nOpcao Invalida, escolha novamente!\n");
+                break;
+        }
+            if (escolha != 3){
+                pausar();
+            }
+    } while (escolha != 3);
+}
+
+void alterar_tutor(Tutor_t *tutor){
+    int escolha_tutor;
+    do{
+        printf("\nQual dado voce deseja alterar:\n"
+            "1 - Nome do Tutor\n"
+            "2 - Telefone do Tutor\n"
+            "3 - Sair\n"
+        );
+        if(scanf("%d", &escolha_tutor) != 1){
+            escolha_tutor = 0;
+        }
+        while(getchar() != '\n');
+
+        switch(escolha_tutor) {
+        case 1: {
+            char novo_nome[50];
+            printf("\nO nome atual e: %s\n", tutor->nome);
+            printf("\nQual voce quer que seja o novo nome? ");
+            fgets(novo_nome, sizeof(novo_nome), stdin);
+            novo_nome[strcspn(novo_nome, "\n")] = '\0';
+            if (novo_nome[0] == '\0'){
+                printf("\nNome vazio. Nada foi alterado.\n");
+            } else {
+                strcpy(tutor->nome, novo_nome);
+                printf("\nNome alterado com sucesso!\n");
+            }
+            break;
+        }
+        case 2: {
+            char novo_telefone[20];
+            printf("\nO telefone atual e: %s\n", tutor->telefone);
+            printf("\nQual voce quer que seja o novo telefone? ");
+            fgets(novo_telefone, sizeof(novo_telefone), stdin);
+            novo_telefone[strcspn(novo_telefone, "\n")] = '\0';
+            if (novo_telefone[0] == '\0'){
+                printf("\nTelefone Vazio. Nada foi alterado.\n");
+            } else {
+                strcpy(tutor->telefone, novo_telefone);
+                printf("\nTelefone alterado com sucesso!\n");
+            }
+            break;
+        }
+        case 3: {
+            printf("\nVoltando ao menu inicial...\n");
+            break;
+        }
+        default:
+            break;
+        }
+    } while (escolha_tutor != 3);
+    
+}
+
+void alterar_animal(Animal_t *animal, Tutor_t tutores[], int qtdTutores){
+
 }
 // Pausa após cada iteração!
 void pausar(void) {

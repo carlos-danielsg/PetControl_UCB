@@ -11,7 +11,7 @@ Sistema de controle de tutores e animais, feito em **C** e executado no terminal
 | 3 | Listar cadastros (tutores com seus animais) | Pronto |
 | 4 | Buscar registros por ID de tutor ou de animal | Pronto |
 | 5 | Registrar atendimentos | Pronto |
-| 6 | Alterar cadastros | Fazendo |
+| 6 | Alterar cadastros | Pronto |
 | 7 | Relatórios | A fazer |
 | 8 | Sair | Pronto |
 
@@ -23,6 +23,7 @@ Sistema de controle de tutores e animais, feito em **C** e executado no terminal
 - **Busca por tutor:** mostra nome, telefone e todos os animais dele.
 - **Busca por animal:** mostra nome, espécie e o tutor responsável.
 - **Registrar atendimentos** só é possivel se existir ao menos um tutor e um animal, lista serviços e salva os atendimentos.
+- **Alterar cadastros** possibilita a alteração de nomes, telefone do tutor, espécie do animal e tutor cadastrado do animal.
 
 ## Como compilar e executar
 

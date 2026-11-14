@@ -11,7 +11,7 @@ Sistema de controle de tutores e animais, feito em **C** e executado no terminal
 | 3 | Listar cadastros (tutores com seus animais) | Pronto |
 | 4 | Buscar registros por ID de tutor ou de animal | Pronto |
 | 5 | Registrar atendimentos | Pronto |
-| 6 | Alterar cadastros | A fazer |
+| 6 | Alterar cadastros | Fazendo |
 | 7 | Relatórios | A fazer |
 | 8 | Sair | Pronto |
 
@@ -100,4 +100,7 @@ typedef struct {
 | `buscar_registros` | Submenu de busca por ID de tutor ou de animal |
 | `listar_servicos` | Exibe os serviços pré definidos |
 | `registrar_atendimentos` | Cadastra um atendimento vinculado a um animal existente|
+| `alterar_cadastros` | Altera os dados dos tutores e dos animais|
+| `alterar_tutor` | Possibilita alteração do nome e telefone do tutor|
+| `alterar_animal`| Possibilita alteração do nome, especie e do tutor do animal |
 | `pausar` | Aguarda o Enter antes de voltar ao menu |
